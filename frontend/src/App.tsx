@@ -14,7 +14,7 @@ function App() {
 
   useEffect(() => {
     // ✅ Create socket ONLY ONCE
-    socketRef.current = io("http://localhost:5000");
+    socketRef.current = io("https://chat-app-backend-igen.onrender.com");
 
     const socket = socketRef.current;
 
