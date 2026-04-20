@@ -11,12 +11,13 @@ app.use(cors());
 
 const server = http.createServer(app);
 
-// ✅ CONNECT DB
+// ✅ CONNECT DB (optional for now)
 mongoose
   .connect("mongodb+srv://chatuser:Maaislove%4005@cluster0.xs03vyo.mongodb.net/chat-app?retryWrites=true&w=majority")
   .then(() => console.log("MongoDB Atlas connected"))
   .catch((err) => console.log("MongoDB error", err));
-  
+
+// ✅ SOCKET
 const io = new Server(server, {
   cors: {
     origin: "*",
@@ -36,19 +37,24 @@ io.on("connection", (socket) => {
       const messages = await Message.find({ room });
       socket.emit("chat_history", messages);
     } catch (err) {
-      console.log("Error fetching messages");
+      console.log("Skipping DB history");
+      socket.emit("chat_history", []); // fallback
     }
   });
 
-  // ✅ SEND MESSAGE
+  // ✅ SEND MESSAGE (FIXED)
   socket.on("send_message", async (data) => {
+    console.log("MESSAGE RECEIVED:", data);
+
+    // 🔥 ALWAYS EMIT FIRST (IMPORTANT)
+    io.to(data.room).emit("receive_message", data);
+
+    // 🔥 TRY SAVING (but don't block UI)
     try {
       const newMessage = new Message(data);
       await newMessage.save();
-
-      io.to(data.room).emit("receive_message", data);
     } catch (err) {
-      console.log("Error saving message");
+      console.log("Skipping DB save");
     }
   });
 
@@ -66,6 +72,9 @@ io.on("connection", (socket) => {
   });
 });
 
-server.listen(5000, () => {
-  console.log("Server running on port 5000");
+// ✅ FIX PORT (IMPORTANT FOR RENDER)
+const PORT = process.env.PORT || 5000;
+
+server.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
 });
