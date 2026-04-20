@@ -29,7 +29,7 @@ function Login({ joinRoom }: any) {
       <Box p={8} w="320px" {...glass}>
         <VStack spacing={4}>
           <Text fontSize="2xl" fontWeight="bold">
-            💬 NeonTalk
+            💬 ChatHippo
           </Text>
 
           <Input

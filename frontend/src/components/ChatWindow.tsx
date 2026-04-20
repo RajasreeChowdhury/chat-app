@@ -69,7 +69,7 @@ function ChatWindow({
           borderRight="1px solid rgba(255,255,255,0.1)"
         >
           <VStack align="start" spacing={4}>
-            <Text fontWeight="bold">💬 NeonTalk</Text>
+            <Text fontWeight="bold">💬 ChatHippo</Text>
             <Text>👤 {username}</Text>
             <Text>📍 {room}</Text>
             <Text color="green.400">● Online</Text>

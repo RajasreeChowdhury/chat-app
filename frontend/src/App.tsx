@@ -12,24 +12,25 @@ function App() {
 
   const socketRef = useRef<Socket | null>(null);
 
-  useEffect(() => {
-    // ✅ Create socket ONLY ONCE
-    socketRef.current = io("https://chat-app-backend-igen.onrender.com");
+useEffect(() => {
+  socketRef.current = io("https://chat-app-backend-igen.onrender.com", {
+    transports: ["websocket"], // important for production
+  });
 
-    const socket = socketRef.current;
+  const socket = socketRef.current;
 
-    // ✅ Receive messages
-    socket.on("receive_message", (data) => {
-      setChat((prev) => [...prev, data]);
-    });
-    socket.on("chat_history", (messages) => {
-  setChat(messages);
-});
+  socket.on("receive_message", (data) => {
+    setChat((prev) => [...prev, data]);
+  });
 
-    return () => {
-      socket.disconnect();
-    };
-  }, []);
+  socket.on("chat_history", (messages) => {
+    setChat(messages);
+  });
+
+  return () => {
+    socket.disconnect();
+  };
+}, []);
 
   const joinRoom = (name: string, roomName: string) => {
     if (!socketRef.current) return;
